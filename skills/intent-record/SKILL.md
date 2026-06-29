@@ -199,6 +199,18 @@ INDEX.md가 없으면 생성:
 - 변경사항 0건: 사용자에게 "기록할 변경 없음" 알림 후 종료.
 - 대화 내 의도 추출 실패: 추측하지 않고 사용자에게 직접 입력 요청.
 
-## Schema 참고
+## 데이터 형식
 
-상세 schema는 [../../docs/SCHEMA.md](../../docs/SCHEMA.md).
+### 디렉토리
+`docs/intent/<NNNN>-<slug>/`에 `decision.md`(정제본)와 `transcript.md`(대화 발췌)를 둔다. 루트 `docs/intent/INDEX.md`는 시간 역순 타임라인이다.
+
+### 필드 규칙
+- **id**: 4자리 zero-padded. INDEX의 최대값 + 1. 한 번 부여하면 변경하지 않는다.
+- **slug**: 영어 소문자 kebab-case, 4-6 단어. 디렉토리명은 `<id>-<slug>`.
+- **supersedes**: 옛 결정을 뒤집는다(반대 방향). **refines**: 옛 결정을 정교화한다(같은 방향).
+- **superseded_by**: append-only의 유일한 예외. 새 결정이 옛 결정을 supersede하면 옛 결정의 이 필드만 갱신한다.
+- **assumptions**: 결정이 의존하는 가정. 구체적·측정 가능하게 적는다(예: "외부 API ~100rps"). 가정이 깨지면 결정을 재검토하는 신호다.
+- **session**: Claude Code session ID(UUID). raw transcript 추적용.
+
+### transcript.md
+user·assistant 본문은 원문 그대로, 도구 호출은 한 줄 요약, 도구 결과는 의미 있을 때만 짧게 인용한다. 시간순으로 적고 미화하지 않는다.
