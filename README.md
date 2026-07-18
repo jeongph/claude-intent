@@ -60,17 +60,21 @@ docs/intent/
 
 ## 설치
 
-```bash
-# Claude Code 마켓플레이스 (예정)
-/plugin install claude-intent
+[jeongph/claude-plugins 마켓플레이스](https://github.com/jeongph/claude-plugins)에서 설치한다.
 
-# 또는 로컬 개발
-git clone https://github.com/jeongph/claude-intent.git ~/.claude/plugins/claude-intent
+마켓플레이스 등록(최초 1회):
+
+```
+/plugin marketplace add jeongph/claude-plugins
 ```
 
-## Status
+플러그인 설치:
 
-🚧 v0.1.0 — Phase 1 (MVP). 자체 dogfood 단계.
+```
+/plugin install claude-intent@jeongph-claude-plugins
+```
+
+로컬 개발 시에는 저장소를 clone한 뒤 `claude --plugin-dir <경로>`로 로드한다.
 
 ## License
 
