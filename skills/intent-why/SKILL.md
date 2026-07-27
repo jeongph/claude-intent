@@ -85,6 +85,15 @@ ls -d docs/intent/<NNNN>-*/  # 정확히 1개여야 정상
 - **`supersedes: [<id>, ...]`** → 그 옛 결정들도 함께 표시 (역사적 맥락. 한 단계만 추적, 깊이 제한)
 - **`superseded_by: <id>`** → 이 결정이 이미 뒤집혔으면 신결정 안내 ("⚠️ #0042가 이걸 뒤집음")
 - **`refines: [<id>, ...]`** → 정교화 관계 한 줄로 표시
+- **`refined_by: [<id>, ...]`** → "→ #NNNN에서 정교화됨" 표시 (결정은 여전히 유효)
+- **`retracts: [<id>, ...]`** → 이 결정이 무엇을 철회했는지 한 줄로 표시
+- **`retracted_by: <id>`** → **⚠️ 경고 필수**: "⚠️ #NNNN에서 철회됨 — 이 결정은 무효" (superseded 경고와 동일 패턴)
+
+**레거시 백링크 폴백**: 구버전 스키마로 기록된 결정에는 `refined_by`/`retracted_by` 필드가 없을 수 있다. 매칭된 결정에 backward 필드가 없으면 다른 결정들의 forward 필드를 역스캔해 보완한다:
+
+```bash
+grep -l "refines:.*<id>\|retracts:.*<id>" docs/intent/*/decision.md
+```
 
 체인 깊이는 **1단계만**. 2단계 이상은 사용자가 명시적으로 요청 시.
 
@@ -123,6 +132,19 @@ ls -d docs/intent/<NNNN>-*/  # 정확히 1개여야 정상
   → docs/intent/0019-fixed-retry/
 ```
 
+정교화·철회 관계 표시 예:
+
+```
+#0042 (2026-04-29) 재시도 백오프 도입
+  ...
+  → #0045에서 정교화됨 (결정은 여전히 유효)
+
+#0031 (2026-04-01) 응답 캐시 도입 ⚠️ #0044에서 철회됨 — 이 결정은 무효
+  Intent: 응답 지연 감소
+  철회 이유: 캐시 대상 API가 제품에서 제거됨 (#0044 참고)
+  → docs/intent/0031-add-response-cache/
+```
+
 상세 내용(전체 본문, transcript.md)이 필요하면 사용자가 추가 요청 (`#0042 본문`, `#0042 transcript`).
 
 ### 6. 다음 행동 제안 (선택)
@@ -133,6 +155,8 @@ ls -d docs/intent/<NNNN>-*/  # 정확히 1개여야 정상
 관련 작업하려면:
   - 새 결정 추가: "이번 사이클 정리해줘" → intent-record
   - 이 결정 뒤집기: "#0042 뒤집는 작업 시작할게" → intent-record (supersedes)
+  - 이 결정 정교화: "#0042에 근거 보강해줘" → intent-refine
+  - 이 결정 철회: "#0042 없던 걸로 기록해줘" → intent-retract
 ```
 
 매칭 0건이면 안내 생략.
@@ -141,7 +165,7 @@ ls -d docs/intent/<NNNN>-*/  # 정확히 1개여야 정상
 
 이 스킬은 다음을 **하지 않습니다**:
 
-- 결정 작성·수정 (= `intent-record` 영역)
+- 결정 작성·수정 (= `intent-record` / `intent-refine` / `intent-retract` 영역)
 - 코드 직접 분석·실행 (= 일반 코드 리딩)
 - 의도와 코드의 어긋남 검증 (= 미래 `intent-verify`)
 - 임베딩·의미 검색 (= MVP 범위 밖, frontmatter+grep만)
