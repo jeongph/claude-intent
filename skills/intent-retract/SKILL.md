@@ -1,6 +1,7 @@
 ---
 name: intent-retract
-description: Use when the user wants to retract/void an already-recorded decision in docs/intent/ — marking it invalid WITHOUT a replacement decision. 사용자가 한국어로 "#0042 철회해줘", "그 결정 없던 걸로 기록해줘", "intent retract", "그 결정 무효화해줘", "그거 폐기된 결정이야 남겨줘"라고 하거나, 영어로 "retract decision #42", "void that decision", "intent retract"라고 할 때. 구분: 코드를 되돌리는 것(git revert)이 아니라 기록된 결정의 무효화다. 대체 결정이 있으면 retract가 아니라 intent-record(supersedes) 영역이고, 결정이 여전히 유효한데 보강만 하려면 intent-refine 영역이다.
+description: >-
+  Use when the user wants to retract/void an already-recorded decision in docs/intent/ — marking it invalid WITHOUT a replacement decision. 사용자가 한국어로 "#0042 철회해줘", "그 결정 없던 걸로 기록해줘", "intent retract", "그 결정 무효화해줘", "그거 폐기된 결정이야 남겨줘"라고 하거나, 영어로 "retract decision #42", "void that decision", "intent retract"라고 할 때. 구분: 코드를 되돌리는 것(git revert)이 아니라 기록된 결정의 무효화다. 대체 결정이 있으면 retract가 아니라 intent-record(supersedes) 영역이고, 결정이 여전히 유효한데 보강만 하려면 intent-refine 영역이다.
 ---
 
 # Intent Retract

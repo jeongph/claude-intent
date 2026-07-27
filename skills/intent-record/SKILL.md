@@ -1,6 +1,7 @@
 ---
 name: intent-record
-description: Use when the user wants to record/save the current work cycle's intent, decisions, and trade-offs into docs/intent/. 사용자가 한국어로 "이번 사이클 정리해줘", "기록해줘", "intent record", "사이클 저장", "방금 한 거 의도 저장", "오늘 작업 의도 기록", "이거 의도 남겨", "사이클 마무리" 같은 말을 하거나, 영어로 "record this cycle", "save the intent", "log the decision", "intent record"라고 할 때. Extracts intent/alternatives/chosen/trade-offs/assumptions from the current conversation transcript and recent git changes, drafts a decision.md, asks user to review, then saves to docs/intent/<NNNN>-<slug>/. Does NOT auto-amend commits — user adds the trailer themselves. 구분: 이미 기록된 결정에 근거·가정을 보강만 하는 건 intent-refine, 기록된 결정을 대체 없이 무효화하는 건 intent-retract 영역. 기존 결정을 뒤집고 대체하는 기록(supersedes)은 이 스킬 영역이다.
+description: >-
+  Use when the user wants to record/save the current work cycle's intent, decisions, and trade-offs into docs/intent/. 사용자가 한국어로 "이번 사이클 정리해줘", "기록해줘", "intent record", "사이클 저장", "방금 한 거 의도 저장", "오늘 작업 의도 기록", "이거 의도 남겨", "사이클 마무리" 같은 말을 하거나, 영어로 "record this cycle", "save the intent", "log the decision", "intent record"라고 할 때. Extracts intent/alternatives/chosen/trade-offs/assumptions from the current conversation transcript and recent git changes, drafts a decision.md, asks user to review, then saves to docs/intent/<NNNN>-<slug>/. Does NOT auto-amend commits — user adds the trailer themselves. 구분: 이미 기록된 결정에 근거·가정을 보강만 하는 건 intent-refine, 기록된 결정을 대체 없이 무효화하는 건 intent-retract 영역. 기존 결정을 뒤집고 대체하는 기록(supersedes)은 이 스킬 영역이다.
 ---
 
 # Intent Record

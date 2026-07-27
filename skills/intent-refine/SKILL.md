@@ -1,6 +1,7 @@
 ---
 name: intent-refine
-description: Use when the user wants to refine/elaborate an already-recorded decision in docs/intent/ — adding evidence, assumptions, or clearer rationale, typically WITHOUT new code changes. 사용자가 한국어로 "#0042 정교화해줘", "그 결정에 근거 보강해줘", "intent refine", "이전 결정 더 명확히 남겨줘", "그때 결정한 거에 가정 추가해줘", "그 결정 이해가 깊어졌어 기록하자"라고 하거나, 영어로 "refine decision #42", "add rationale to that decision", "intent refine"이라고 할 때. 기존 결정을 앵커로 새 사이클을 만들고 refines/refined_by로 연결한다. git 변경사항이 없어도 동작한다. 구분: 새 작업 사이클 기록(코드 변경 동반)은 intent-record, 결정을 뒤집고 대체하는 건 intent-record(supersedes), 결정 무효화는 intent-retract 영역.
+description: >-
+  Use when the user wants to refine/elaborate an already-recorded decision in docs/intent/ — adding evidence, assumptions, or clearer rationale, typically WITHOUT new code changes. 사용자가 한국어로 "#0042 정교화해줘", "그 결정에 근거 보강해줘", "intent refine", "이전 결정 더 명확히 남겨줘", "그때 결정한 거에 가정 추가해줘", "그 결정 이해가 깊어졌어 기록하자"라고 하거나, 영어로 "refine decision #42", "add rationale to that decision", "intent refine"이라고 할 때. 기존 결정을 앵커로 새 사이클을 만들고 refines/refined_by로 연결한다. git 변경사항이 없어도 동작한다. 구분: 새 작업 사이클 기록(코드 변경 동반)은 intent-record, 결정을 뒤집고 대체하는 건 intent-record(supersedes), 결정 무효화는 intent-retract 영역.
 ---
 
 # Intent Refine
