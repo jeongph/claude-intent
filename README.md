@@ -12,7 +12,7 @@ Claude Code와의 페어 프로그래밍은 사고를 자연스럽게 텍스트�
 
 ## 동작 원칙
 
-- **append-only**: 옛 결정은 수정하지 않고, 새 결정이 `supersedes`로 뒤집음 (정직성)
+- **append-only**: 옛 결정은 수정하지 않고, 새 결정이 관계로 연결됨 — `supersedes`(대체), `refines`(정교화), `retracts`(철회) (정직성)
 - **자동 추출 + 사용자 검수**: 자동이되 사후 미화 방지를 위해 검수 단계 필수
 - **git을 건드리지 않음**: 커밋 trailer는 사용자가 직접 추가. 도구가 git history를 자동 amend하지 않음
 
@@ -26,6 +26,18 @@ Claude Code와의 페어 프로그래밍은 사고를 자연스럽게 텍스트�
 |---|---|---|
 | `intent-record` | 현재 작업 사이클의 의도를 추출·저장 | `git commit` |
 | `intent-why` | 코드·키워드로 과거 결정 역추적 | `git blame` |
+| `intent-refine` | 기록된 결정에 근거·가정을 나중에 보강 (코드 변경 불필요) | 각주·보론 |
+| `intent-retract` | 기록된 결정을 대체 없이 철회 (이유가 기록으로 남음) | `git revert` |
+
+### 관계 모델
+
+| forward | backward | 의미 |
+|---|---|---|
+| `supersedes` | `superseded_by` | 뒤집고 **대체** (새 방향 있음) |
+| `refines` | `refined_by` | 같은 방향 **정교화** (옛 결정 여전히 유효) |
+| `retracts` | `retracted_by` | **철회** — 무효화, 대체 없음 |
+
+backward 필드 갱신은 append-only의 통제된 예외 — 옛 결정의 해당 필드 한 개만 갱신하고 본문은 불변.
 
 ## 사용 흐름
 
@@ -39,7 +51,13 @@ Claude Code와의 페어 프로그래밍은 사고를 자연스럽게 텍스트�
 
 > "src/retry.ts 왜 이래?"
 
-→ `intent-why` 스킬 발동 → frontmatter·INDEX 검색 → 관련 결정 표시 + supersedes 체인 추적
+→ `intent-why` 스킬 발동 → frontmatter·INDEX 검색 → 관련 결정 표시 + 관계 체인 추적 (철회된 결정은 ⚠️ 경고)
+
+결정이 더 명확해졌거나 무효가 됐을 때:
+
+> "#0042에 근거 보강해줘" → `intent-refine` (코드 변경 없이 정교화)
+>
+> "#0042 없던 걸로 기록해줘" → `intent-retract` (대체 없이 철회, 이유 기록)
 
 ## 데이터 모델
 
@@ -56,7 +74,7 @@ docs/intent/
     └── transcript.md
 ```
 
-상세 schema는 [docs/SCHEMA.md](docs/SCHEMA.md) 참고.
+상세 schema는 [skills/intent-record/SKILL.md](skills/intent-record/SKILL.md)의 "데이터 형식" 절 참고.
 
 ## 설치
 

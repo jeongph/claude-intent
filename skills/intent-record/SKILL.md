@@ -1,6 +1,7 @@
 ---
 name: intent-record
-description: Use when the user wants to record/save the current work cycle's intent, decisions, and trade-offs into docs/intent/. 사용자가 한국어로 "이번 사이클 정리해줘", "기록해줘", "intent record", "사이클 저장", "방금 한 거 의도 저장", "오늘 작업 의도 기록", "이거 의도 남겨", "사이클 마무리" 같은 말을 하거나, 영어로 "record this cycle", "save the intent", "log the decision", "intent record"라고 할 때. Extracts intent/alternatives/chosen/trade-offs/assumptions from the current conversation transcript and recent git changes, drafts a decision.md, asks user to review, then saves to docs/intent/<NNNN>-<slug>/. Does NOT auto-amend commits — user adds the trailer themselves.
+description: >-
+  Use when the user wants to record/save the current work cycle's intent, decisions, and trade-offs into docs/intent/. 사용자가 한국어로 "이번 사이클 정리해줘", "기록해줘", "intent record", "사이클 저장", "방금 한 거 의도 저장", "오늘 작업 의도 기록", "이거 의도 남겨", "사이클 마무리" 같은 말을 하거나, 영어로 "record this cycle", "save the intent", "log the decision", "intent record"라고 할 때. Extracts intent/alternatives/chosen/trade-offs/assumptions from the current conversation transcript and recent git changes, drafts a decision.md, asks user to review, then saves to docs/intent/<NNNN>-<slug>/. Does NOT auto-amend commits — user adds the trailer themselves. 구분: 이미 기록된 결정에 근거·가정을 보강만 하는 건 intent-refine, 기록된 결정을 대체 없이 무효화하는 건 intent-retract 영역. 기존 결정을 뒤집고 대체하는 기록(supersedes)은 이 스킬 영역이다.
 ---
 
 # Intent Record
@@ -73,6 +74,9 @@ files: [...]
 supersedes: []
 superseded_by: null
 refines: []
+refined_by: []
+retracts: []
+retracted_by: null
 assumptions:
   - "..."
 session: "<현재 Claude Code session id>"
@@ -189,14 +193,16 @@ INDEX.md가 없으면 생성:
 1. 새 사이클 frontmatter에 `supersedes: [0019]`
 2. 옛 사이클 `docs/intent/0019-*/decision.md`의 frontmatter `superseded_by: <새 ID>`로 갱신
 
-   → 이것이 append-only 원칙의 **유일한 예외**. 옛 결정의 본문·다른 필드는 절대 건드리지 않음.
+`refines`를 기록할 때도 대칭으로 옛 결정의 `refined_by` 리스트에 새 ID를 append한다.
 
-`refines`도 frontmatter에만 명시. 옛 결정 측에는 역방향 필드 추가하지 않음 (정교화는 양방향 강제 안 함).
+backward 필드(`superseded_by`/`refined_by`/`retracted_by`) 갱신은 append-only 원칙의 **통제된 예외 3종**이다. 옛 결정의 해당 필드 한 개만 갱신하고(필드가 없으면 추가), 본문·다른 필드는 절대 건드리지 않음.
+
+기록된 결정의 정교화 전용 흐름은 `intent-refine`, 철회는 `intent-retract` 스킬이 담당한다.
 
 ## 예외 처리
 
 - `git`이 초기화 안 된 디렉토리: 사용자에게 알리고 종료. claude-intent는 git 위에서 동작.
-- 변경사항 0건: 사용자에게 "기록할 변경 없음" 알림 후 종료.
+- 변경사항 0건: 사용자에게 "기록할 변경 없음" 알림 후 종료. **예외**: supersede 목적 기록(코드 변경 없이 기존 결정을 뒤집고 대체하는 결정)은 변경사항 0건을 허용하며, 이때 `commits`/`files`는 빈 리스트로 둔다.
 - 대화 내 의도 추출 실패: 추측하지 않고 사용자에게 직접 입력 요청.
 
 ## 데이터 형식
@@ -207,8 +213,15 @@ INDEX.md가 없으면 생성:
 ### 필드 규칙
 - **id**: 4자리 zero-padded. INDEX의 최대값 + 1. 한 번 부여하면 변경하지 않는다.
 - **slug**: 영어 소문자 kebab-case, 4-6 단어. 디렉토리명은 `<id>-<slug>`.
-- **supersedes**: 옛 결정을 뒤집는다(반대 방향). **refines**: 옛 결정을 정교화한다(같은 방향).
-- **superseded_by**: append-only의 유일한 예외. 새 결정이 옛 결정을 supersede하면 옛 결정의 이 필드만 갱신한다.
+- 관계는 3종 대칭 구조다. forward는 새 결정에, backward는 옛 결정에 기록한다:
+
+  | forward | backward | 의미 | 카디널리티 |
+  |---|---|---|---|
+  | `supersedes: []` | `superseded_by: null` | 뒤집고 대체 (새 방향 있음) | 옛 결정당 1회 |
+  | `refines: []` | `refined_by: []` | 같은 방향 정교화 (옛 결정 여전히 유효) | 여러 번 가능 (리스트) |
+  | `retracts: []` | `retracted_by: null` | 철회 — 무효화, 대체 없음 | 옛 결정당 1회 |
+
+- backward 필드 갱신은 append-only의 **통제된 예외 3종**. 새 결정이 관계를 맺으면 옛 결정의 해당 필드만 갱신한다(필드가 없으면 추가).
 - **assumptions**: 결정이 의존하는 가정. 구체적·측정 가능하게 적는다(예: "외부 API ~100rps"). 가정이 깨지면 결정을 재검토하는 신호다.
 - **session**: Claude Code session ID(UUID). raw transcript 추적용.
 
