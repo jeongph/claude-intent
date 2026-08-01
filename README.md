@@ -1,5 +1,8 @@
 # claude-intent
 
+[![version](https://img.shields.io/github/v/release/jeongph/claude-intent?label=version&color=blue)](https://github.com/jeongph/claude-intent/releases)
+[![license](https://img.shields.io/github/license/jeongph/claude-intent?color=lightgrey)](LICENSE)
+
 > 코드는 의도의 그림자다.
 
 작업 사이클의 **의도(Intent)·대안(Alternatives)·트레이드오프(Trade-offs)**를 자동 추출해 `docs/intent/`에 기록하고, 나중에 코드의 "왜"를 역추적하는 Claude Code 플러그인입니다.
