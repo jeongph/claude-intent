@@ -148,9 +148,16 @@ exponential-backoff로 가자
 
 발화 본문이 매우 길면 (수천 단어) 핵심 단락만 발췌하되 **잘라낸 부분 표시**(`[... 중간 생략 ...]`)를 명시. 통째 미화 X.
 
-### 8. INDEX.md 갱신
+### 8. _INDEX.md 갱신
 
-`docs/intent/INDEX.md`에 새 행을 **맨 위(시간 역순)**로 추가:
+갱신 전에 이전 이름의 파일을 확인한다. 두 파일이 함께 방치되면 갱신이 멈춘
+쪽이 실제와 어긋난 채 남는다.
+
+- `docs/intent/INDEX.md`만 있으면 `docs/intent/_INDEX.md`로 이름을 바꾼 뒤 갱신한다.
+- 둘 다 있으면 `_INDEX.md`가 최신이다. **절대 덮어쓰지 않는다.** `INDEX.md`에만 있는 행을 ID 기준으로 `_INDEX.md`에 옮기고, 같은 ID가 양쪽에 있으면 `_INDEX.md` 쪽 행을 남긴다. 합친 표는 ID 역순(최신이 맨 위)으로 정렬한 뒤 `INDEX.md`를 삭제한다.
+- `_INDEX.md`만 있으면 그대로 갱신을 진행한다.
+
+`docs/intent/_INDEX.md`에 새 행을 **맨 위(시간 역순)**로 추가:
 
 ```markdown
 | [<NNNN>](<NNNN>-<slug>/) | <YYYY-MM-DD> | <title> | <short-commit> | <relations> |
@@ -158,7 +165,7 @@ exponential-backoff로 가자
 
 `<relations>` 예시: `supersedes #0019`, `refines #0001`, `—`
 
-INDEX.md가 없으면 생성:
+_INDEX.md가 없으면 생성:
 
 ```markdown
 # Intent Timeline
@@ -177,7 +184,7 @@ INDEX.md가 없으면 생성:
 
   docs/intent/<NNNN>-<slug>/decision.md
   docs/intent/<NNNN>-<slug>/transcript.md
-  docs/intent/INDEX.md (갱신됨)
+  docs/intent/_INDEX.md (갱신됨)
 
 다음 단계 (선택):
   - 다음 커밋 메시지 본문에 "Intent: <NNNN>" trailer 추가
@@ -208,7 +215,7 @@ backward 필드(`superseded_by`/`refined_by`/`retracted_by`) 갱신은 append-on
 ## 데이터 형식
 
 ### 디렉토리
-`docs/intent/<NNNN>-<slug>/`에 `decision.md`(정제본)와 `transcript.md`(대화 발췌)를 둔다. 루트 `docs/intent/INDEX.md`는 시간 역순 타임라인이다.
+`docs/intent/<NNNN>-<slug>/`에 `decision.md`(정제본)와 `transcript.md`(대화 발췌)를 둔다. 루트 `docs/intent/_INDEX.md`는 시간 역순 타임라인이다.
 
 ### 필드 규칙
 - **id**: 4자리 zero-padded. INDEX의 최대값 + 1. 한 번 부여하면 변경하지 않는다.

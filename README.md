@@ -48,7 +48,7 @@ backward 필드 갱신은 append-only의 통제된 예외 — 옛 결정의 해�
 
 > "이번 사이클 정리해줘"
 
-→ `intent-record` 스킬 발동 → transcript에서 의도/대안/근거/가정 추출 → yaml draft → 사용자 검수 → `docs/intent/<NNNN>-<slug>/decision.md` + `transcript.md` 저장 + `INDEX.md` 갱신
+→ `intent-record` 스킬 발동 → transcript에서 의도/대안/근거/가정 추출 → yaml draft → 사용자 검수 → `docs/intent/<NNNN>-<slug>/decision.md` + `transcript.md` 저장 + `_INDEX.md` 갱신
 
 나중에:
 
@@ -68,7 +68,7 @@ backward 필드 갱신은 append-only의 통제된 예외 — 옛 결정의 해�
 
 ```
 docs/intent/
-├── INDEX.md                          # 자동 생성 timeline
+├── _INDEX.md                         # 자동 생성 timeline
 ├── 0001-add-retry-backoff/
 │   ├── decision.md                   # 정제본 (yaml frontmatter + 본문)
 │   └── transcript.md                 # raw 대화 발췌
@@ -78,6 +78,10 @@ docs/intent/
 ```
 
 상세 schema는 [skills/intent-record/SKILL.md](skills/intent-record/SKILL.md)의 "데이터 형식" 절 참고.
+
+### 이전 이름(`INDEX.md`)을 쓰던 프로젝트
+
+별도 조치가 필요 없다. `intent-record`·`intent-refine`·`intent-retract`가 인덱스를 다음에 갱신할 때 처리한다: `INDEX.md`만 있으면 `_INDEX.md`로 이름을 바꾸고, `_INDEX.md`가 이미 있으면 그것을 최신으로 보고 `INDEX.md`에만 있던 행을 병합한 뒤 `INDEX.md`를 지운다. `intent-why`는 조회 전용이라 파일을 바꾸지 않고, `_INDEX.md`가 없으면 `INDEX.md`를 읽는다.
 
 ## 설치
 

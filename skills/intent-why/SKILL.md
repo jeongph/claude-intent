@@ -74,9 +74,11 @@ ls -d docs/intent/<NNNN>-*/  # 정확히 1개여야 정상
 
 ### 3. INDEX 보조 활용
 
-`docs/intent/INDEX.md`를 읽어 시간순·관계 정보 추가 확보:
+`docs/intent/_INDEX.md`를 읽어 시간순·관계 정보 추가 확보:
 - 매칭된 사이클의 정확한 행 위치
 - supersedes/refines 관계 한 눈에
+
+`_INDEX.md`가 없고 이전 이름의 `INDEX.md`만 있으면 그것을 읽는다.
 
 ### 4. 관계 체인 추적
 
@@ -104,7 +106,7 @@ grep -l "refines:.*<id>\|retracts:.*<id>" docs/intent/*/decision.md
 "<query>" 매칭되는 사이클 없음
 
 확인:
-  - docs/intent/INDEX.md (현재 N개 사이클)
+  - docs/intent/_INDEX.md (현재 N개 사이클)
   - 다른 키워드/파일로 재검색
 ```
 
