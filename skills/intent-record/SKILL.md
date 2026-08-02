@@ -150,9 +150,12 @@ exponential-backoff로 가자
 
 ### 8. _INDEX.md 갱신
 
-갱신 전에 이전 이름의 파일을 확인한다. `docs/intent/INDEX.md`가 있으면
-`docs/intent/_INDEX.md`로 이름을 바꾼 뒤 갱신한다. 두 파일이 함께 남으면
-갱신이 멈춘 쪽이 실제와 어긋난 채 남는다.
+갱신 전에 이전 이름의 파일을 확인한다. 두 파일이 함께 방치되면 갱신이 멈춘
+쪽이 실제와 어긋난 채 남는다.
+
+- `docs/intent/INDEX.md`만 있으면 `docs/intent/_INDEX.md`로 이름을 바꾼 뒤 갱신한다.
+- 둘 다 있으면 `_INDEX.md`가 최신이다. **절대 덮어쓰지 않는다.** `INDEX.md`에만 있는 행을 ID 기준으로 `_INDEX.md`에 옮기고, 같은 ID가 양쪽에 있으면 `_INDEX.md` 쪽 행을 남긴다. 합친 표는 ID 역순(최신이 맨 위)으로 정렬한 뒤 `INDEX.md`를 삭제한다.
+- `_INDEX.md`만 있으면 그대로 갱신을 진행한다.
 
 `docs/intent/_INDEX.md`에 새 행을 **맨 위(시간 역순)**로 추가:
 

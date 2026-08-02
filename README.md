@@ -79,6 +79,10 @@ docs/intent/
 
 상세 schema는 [skills/intent-record/SKILL.md](skills/intent-record/SKILL.md)의 "데이터 형식" 절 참고.
 
+### 이전 이름(`INDEX.md`)을 쓰던 프로젝트
+
+별도 조치가 필요 없다. `intent-record`·`intent-refine`·`intent-retract`가 인덱스를 다음에 갱신할 때 처리한다: `INDEX.md`만 있으면 `_INDEX.md`로 이름을 바꾸고, `_INDEX.md`가 이미 있으면 그것을 최신으로 보고 `INDEX.md`에만 있던 행을 병합한 뒤 `INDEX.md`를 지운다. `intent-why`는 조회 전용이라 파일을 바꾸지 않고, `_INDEX.md`가 없으면 `INDEX.md`를 읽는다.
+
 ## 설치
 
 [jeongph/claude-plugins 마켓플레이스](https://github.com/jeongph/claude-plugins)에서 설치한다.
