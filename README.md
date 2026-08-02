@@ -48,7 +48,7 @@ backward 필드 갱신은 append-only의 통제된 예외 — 옛 결정의 해�
 
 > "이번 사이클 정리해줘"
 
-→ `intent-record` 스킬 발동 → transcript에서 의도/대안/근거/가정 추출 → yaml draft → 사용자 검수 → `docs/intent/<NNNN>-<slug>/decision.md` + `transcript.md` 저장 + `INDEX.md` 갱신
+→ `intent-record` 스킬 발동 → transcript에서 의도/대안/근거/가정 추출 → yaml draft → 사용자 검수 → `docs/intent/<NNNN>-<slug>/decision.md` + `transcript.md` 저장 + `_INDEX.md` 갱신
 
 나중에:
 
@@ -68,7 +68,7 @@ backward 필드 갱신은 append-only의 통제된 예외 — 옛 결정의 해�
 
 ```
 docs/intent/
-├── INDEX.md                          # 자동 생성 timeline
+├── _INDEX.md                         # 자동 생성 timeline
 ├── 0001-add-retry-backoff/
 │   ├── decision.md                   # 정제본 (yaml frontmatter + 본문)
 │   └── transcript.md                 # raw 대화 발췌

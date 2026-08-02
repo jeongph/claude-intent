@@ -100,7 +100,11 @@ mkdir -p docs/intent/<NNNN>-<slug>
 1. 새 디렉토리에 `decision.md` + `transcript.md` 저장 (transcript 작성 규칙은 intent-record와 동일)
 2. **옛 결정** frontmatter의 `refined_by` 리스트에 새 ID를 append. **필드가 없으면 추가한다** (구버전 스키마 호환). 옛 결정의 본문·다른 필드는 절대 건드리지 않음 — 통제된 append-only 예외.
 
-### 8. INDEX.md 갱신
+### 8. _INDEX.md 갱신
+
+갱신 전에 이전 이름의 파일을 확인한다. `docs/intent/INDEX.md`가 있으면
+`docs/intent/_INDEX.md`로 이름을 바꾼 뒤 갱신한다. 두 파일이 함께 남으면
+갱신이 멈춘 쪽이 실제와 어긋난 채 남는다.
 
 맨 위(시간 역순)에 새 행 추가. 관계 컬럼에 `refines #0042`. 다중 관계는 쉼표 병기 (`refines #0042, supersedes #0019`). INDEX에는 **forward 관계만** 기록한다.
 
@@ -112,7 +116,7 @@ mkdir -p docs/intent/<NNNN>-<slug>
   docs/intent/<NNNN>-<slug>/decision.md
   docs/intent/<NNNN>-<slug>/transcript.md
   docs/intent/<대상>-*/decision.md (refined_by 갱신됨)
-  docs/intent/INDEX.md (갱신됨)
+  docs/intent/_INDEX.md (갱신됨)
 ```
 
 git commit·amend는 하지 않는다.
