@@ -3,25 +3,23 @@
 [![version](https://img.shields.io/github/v/release/jeongph/claude-intent?label=version&color=blue)](https://github.com/jeongph/claude-intent/releases)
 [![license](https://img.shields.io/github/license/jeongph/claude-intent?color=lightgrey)](LICENSE)
 
-> 코드는 의도의 그림자다.
-
-작업 사이클의 **의도(Intent)·대안(Alternatives)·트레이드오프(Trade-offs)**를 자동 추출해 `docs/intent/`에 기록하고, 나중에 코드의 "왜"를 역추적하는 Claude Code 플러그인입니다.
+코드를 왜 이렇게 작성했는지, 어떤 대안을 검토했는지 기록하고 나중에 찾아볼 수 있습니다.
 
 ## 왜 만들었는가
 
-기존 저장 방식(코드, 커밋 메시지, PR 설명, ADR)은 모두 **결과**만 담아왔습니다. 사고의 흐름 그 자체는 휘발됩니다. ADR이 "의도를 담자"고 시도했지만 **사람이 손으로 써야 했기에** 정착하지 못했습니다.
+코드, 커밋 메시지, PR 설명만으로는 어떤 대안을 검토했고 왜 현재 방식을 선택했는지 파악하기 어려울 때가 있습니다. ADR에 결정 이유를 남길 수도 있지만, 작업 후 별도로 작성해야 하는 부담이 있습니다.
 
-Claude Code와의 페어 프로그래밍은 사고를 자연스럽게 텍스트화합니다. 이 플러그인은 그 transcript를 **자동으로 구조화**해 보존합니다.
+이 플러그인은 Claude Code와 나눈 대화에서 결정 이유를 정리합니다. 사용자가 초안을 검토한 뒤 기록으로 저장합니다.
 
 ## 동작 원칙
 
-- **append-only**: 옛 결정은 수정하지 않고, 새 결정이 관계로 연결됨 — `supersedes`(대체), `refines`(정교화), `retracts`(철회) (정직성)
-- **자동 추출 + 사용자 검수**: 자동이되 사후 미화 방지를 위해 검수 단계 필수
+- **기존 결정 보존**: 옛 결정의 본문을 수정하지 않고 새 기록을 추가한다. `supersedes`(대체), `refines`(보강), `retracts`(철회)로 결정 간 관계를 연결한다
+- **사용자 검수 필수**: 추출한 내용이 실제 대화와 일치하는지 확인한 뒤 저장한다
 - **git을 건드리지 않음**: 커밋 trailer는 사용자가 직접 추가. 도구가 git history를 자동 amend하지 않음
 
-## 더 큰 그림
+## 향후 방향
 
-이 플러그인은 "코드와 의도가 1:1로 대응되는 저장소"라는 더 큰 아이디어의 첫 발자국입니다. why-blame, assumption verification, 의도 기반 검색 같은 기능은 향후 방향이며 현재 범위는 아닙니다.
+장기적으로는 코드와 결정 이유를 연결하는 저장소를 목표로 합니다. 코드의 결정 이유를 추적하는 why-blame, 가정 검증, 의도 기반 검색은 향후 검토할 기능이며 현재는 제공하지 않습니다.
 
 ## 스킬
 
@@ -40,7 +38,7 @@ Claude Code와의 페어 프로그래밍은 사고를 자연스럽게 텍스트�
 | `refines` | `refined_by` | 같은 방향 **정교화** (옛 결정 여전히 유효) |
 | `retracts` | `retracted_by` | **철회** — 무효화, 대체 없음 |
 
-backward 필드 갱신은 append-only의 통제된 예외 — 옛 결정의 해당 필드 한 개만 갱신하고 본문은 불변.
+예외적으로 기존 결정의 backward 필드는 갱신할 수 있다. 새 결정과의 관계를 표시하기 위한 변경이며, 해당 필드 하나만 수정하고 본문은 그대로 둔다.
 
 ## 사용 흐름
 
@@ -48,7 +46,7 @@ backward 필드 갱신은 append-only의 통제된 예외 — 옛 결정의 해�
 
 > "이번 사이클 정리해줘"
 
-→ `intent-record` 스킬 발동 → transcript에서 의도/대안/근거/가정 추출 → yaml draft → 사용자 검수 → `docs/intent/<NNNN>-<slug>/decision.md` + `transcript.md` 저장 + `_INDEX.md` 갱신
+→ `intent-record` 스킬 발동 → 대화 기록에서 의도·대안·근거·가정 추출 → YAML 초안 → 사용자 검수 → `docs/intent/<NNNN>-<slug>/decision.md` + `transcript.md` 저장 + `_INDEX.md` 갱신
 
 나중에:
 
@@ -77,7 +75,7 @@ docs/intent/
     └── transcript.md
 ```
 
-상세 schema는 [skills/intent-record/SKILL.md](skills/intent-record/SKILL.md)의 "데이터 형식" 절 참고.
+자세한 데이터 형식은 [skills/intent-record/SKILL.md](skills/intent-record/SKILL.md)의 "데이터 형식" 절 참고.
 
 ### 이전 이름(`INDEX.md`)을 쓰던 프로젝트
 
