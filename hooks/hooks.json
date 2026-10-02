@@ -1,5 +1,5 @@
 {
-  "description": "git commit 시 intent 기록을 제안한다(제안만, 검수 생략 없음).",
+  "description": "git commit 시 intent 기록을 제안한다(제안만 하고, 기록은 intent-record가 수행한다).",
   "hooks": {
     "PostToolUse": [
       {
