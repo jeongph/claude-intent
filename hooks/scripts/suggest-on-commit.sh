@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # git commit 직후 intent 기록을 제안한다. 제안만 하며, 기록 자체는 intent-record skill이
-# 추출 → 사용자 검수 → 저장 순서로 수행한다.
+# 추출 → 저장 → 저장 내용 표시 순서로 수행한다.
 set -euo pipefail
 
 payload=$(cat 2>/dev/null || true)

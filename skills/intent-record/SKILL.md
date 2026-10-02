@@ -1,7 +1,7 @@
 ---
 name: intent-record
 description: >-
-  Use when the user wants to record/save the current work cycle's intent, decisions, and trade-offs into docs/intent/. 사용자가 한국어로 "이번 사이클 정리해줘", "기록해줘", "intent record", "사이클 저장", "방금 한 거 의도 저장", "오늘 작업 의도 기록", "이거 의도 남겨", "사이클 마무리" 같은 말을 하거나, 영어로 "record this cycle", "save the intent", "log the decision", "intent record"라고 할 때. Extracts intent/alternatives/chosen/trade-offs/assumptions from the current conversation transcript and recent git changes, drafts a decision.md, asks user to review, then saves to docs/intent/<NNNN>-<slug>/. Does NOT auto-amend commits — user adds the trailer themselves. 구분: 이미 기록된 결정에 근거·가정을 보강만 하는 건 intent-refine, 기록된 결정을 대체 없이 무효화하는 건 intent-retract 영역. 기존 결정을 뒤집고 대체하는 기록(supersedes)은 이 스킬 영역이다.
+  Use when the user wants to record/save the current work cycle's intent, decisions, and trade-offs into docs/intent/. 사용자가 한국어로 "이번 사이클 정리해줘", "기록해줘", "intent record", "사이클 저장", "방금 한 거 의도 저장", "오늘 작업 의도 기록", "이거 의도 남겨", "사이클 마무리" 같은 말을 하거나, 영어로 "record this cycle", "save the intent", "log the decision", "intent record"라고 할 때. 구분: 이미 기록된 결정에 근거·가정을 보강만 하는 건 intent-refine, 기록된 결정을 대체 없이 무효화하는 건 intent-retract 영역. 기존 결정을 뒤집고 대체하는 기록(supersedes)은 이 스킬 영역이다.
 ---
 
 # Intent Record
@@ -10,11 +10,23 @@ description: >-
 
 비유: `git commit`의 의도 레이어 버전.
 
+## 저장 방식
+
+기록을 요청받으면 **1~9단계를 이어서 수행해 저장한 뒤 보고한다.** 범위·제목·slug는 스스로 정하고, 대화에 드러나지 않은 항목은 비워 둔다. 무엇을 정했고 무엇을 비웠는지는 9단계 보고에 적는다.
+
+| 조건 | 동작 |
+|---|---|
+| 기본 | 끝까지 진행해 저장하고 9단계 보고로 마친다 |
+| 사용자 요청에 "검수", "초안 먼저", "확인하고 저장", "review first"가 있다. 또는 프로젝트 지침 파일(`CLAUDE.md`·`AGENTS.md`)이 저장 전 검수를 요구한다 | **검수 모드**: 5단계에서 초안을 전체 표시하고 승인을 받은 뒤 저장한다. 수정 요청은 반영하고, 거절하면 저장하지 않는다 |
+| [예외 처리](#예외-처리)에 해당한다 | 그 절대로 알리거나 입력을 요청한다 |
+
+기록의 정직성은 세 가지로 지킨다. 대화에 없는 내용을 쓰지 않는다(3·5단계). 원문 발췌를 함께 남긴다(7단계). 저장한 내용을 전부 보여 준다(9단계).
+
 ## 워크플로우
 
-### 1. 사이클 경계 확인
+### 1. 사이클 경계 결정
 
-기본은 **마지막 push 이후 ~ 현재 HEAD**의 변경 또는 **마지막 commit ~ 현재 변경사항**입니다.
+사용자가 범위를 말했으면 그 범위를 쓴다. 말하지 않았으면 이 대화에서 다룬 변경을 범위로 삼는다. 대화만으로 범위가 서지 않으면 **마지막 push 이후 ~ 현재 HEAD**와 미커밋 변경을 쓰고, push 이력이 없으면 **마지막 commit ~ 현재 변경사항**을 쓴다.
 
 ```bash
 git log --oneline -10
@@ -22,7 +34,7 @@ git diff HEAD --stat
 git diff HEAD
 ```
 
-사용자에게 "이 범위가 사이클 경계로 맞는지" 확인합니다. 다른 범위(특정 커밋 이후, 특정 파일군 등)를 원하면 조정.
+정한 범위는 9단계 보고에 적는다.
 
 ### 2. 다음 ID 결정
 
@@ -36,7 +48,7 @@ ls docs/intent/ 2>/dev/null | grep -oE '^[0-9]{4}' | sort -n | tail -1
 
 ### 3. 의도 추출
 
-현재 대화 컨텍스트에서 다음을 뽑습니다. **대화에 명시적으로 드러나지 않은 항목은 추측해서 채우지 말고 사용자에게 질문합니다.**
+현재 대화 컨텍스트에서 다음을 뽑습니다. **대화나 git 변경에서 근거를 짚을 수 있는 내용만 적는다.** 근거가 없는 항목은 비워 둔다. frontmatter 리스트는 `[]`, 본문 절은 "대화에 드러나지 않음"으로 둔다. 비운 항목은 9단계 보고에 적는다.
 
 | 필드 | 의미 | 추출 단서 |
 |---|---|---|
@@ -45,10 +57,10 @@ ls docs/intent/ 2>/dev/null | grep -oE '^[0-9]{4}' | sort -n | tail -1
 | `chosen` | 선택한 대안 + 이유 1-2줄 | "이걸로 가자", "B가 나아 보임" 발화 |
 | `trade-offs` | 받아들인 비용 | "이게 늘긴 하는데", "X는 포기" 발화 |
 | `rejected` | 일찍 기각한 옵션 + 이유 | "그건 아니야 왜냐면" 발화 |
-| `assumptions` | 결정이 의존하는 가정 | 발화에서 명시적으로 안 나오면 사용자에게 질문 필수 |
+| `assumptions` | 결정이 의존하는 가정 | 대화에서 누군가 말한 가정만. 없으면 `[]` |
 | `files` | 변경 파일 | `git diff --name-only` |
 | `commits` | 관련 커밋 | `git log --since=<cycle-start>` |
-| `title` | 결정 한 줄 요약 | 사용자 확인 받음 |
+| `title` | 결정 한 줄 요약 | `intent`를 한 줄로 줄인다 |
 
 ### 4. Slug 생성
 
@@ -57,11 +69,9 @@ ls docs/intent/ 2>/dev/null | grep -oE '^[0-9]{4}' | sort -n | tail -1
 - 좋음: `add-retry-backoff`, `tighten-jitter-floor`, `migrate-auth-middleware`
 - 나쁨: `feature`, `update-code`, `fix-bug`, `한글-슬러그`
 
-자신 없으면 사용자에게 후보 2-3개 제시 후 선택.
+후보가 여럿이면 의도를 가장 짧게 압축한 것을 쓴다.
 
-### 5. Draft 보여주고 검수 받기
-
-`decision.md` 초안을 사용자에게 **전체 표시**하고 명시적 승인을 받습니다.
+### 5. decision.md 작성과 점검
 
 ```markdown
 ---
@@ -99,9 +109,13 @@ session: "<현재 Claude Code session id>"
 [transcript.md](transcript.md)
 ```
 
-검수 단계는 **건너뛰지 않습니다.** 자동 미화 방지가 이 플러그인의 정직성 기반입니다.
+저장 전에 초안의 문장을 하나씩 대화·git 변경과 대조한다.
 
-사용자가 수정·추가하면 그대로 반영. 사용자가 거절하면 저장하지 않고 종료.
+- 근거가 되는 발화나 변경을 짚을 수 있는 문장만 남긴다
+- 선택하지 않은 대안은 대화에서 나온 평가 그대로 적는다
+- `assumptions`에는 대화에서 누군가 말한 가정만 둔다
+
+검수 모드면 이 단계에서 초안을 전체 표시하고 승인을 받는다([저장 방식](#저장-방식)).
 
 ### 6. 저장
 
@@ -111,7 +125,7 @@ mkdir -p docs/intent/<NNNN>-<slug>
 
 두 파일 작성:
 
-- `docs/intent/<NNNN>-<slug>/decision.md` — 5단계의 검수 통과한 내용
+- `docs/intent/<NNNN>-<slug>/decision.md` — 5단계에서 점검한 내용
 - `docs/intent/<NNNN>-<slug>/transcript.md` — raw 대화 발췌
 
 ### 7. transcript.md 작성 규칙
@@ -175,9 +189,9 @@ _INDEX.md가 없으면 생성:
 | <새 행> |
 ```
 
-### 9. 사용자 안내
+### 9. 저장 보고
 
-저장 후 명확히 보고:
+저장한 `decision.md` **전문**을 포함해 보고한다. 사용자가 저장된 내용을 처음 보는 자리다.
 
 ```
 사이클 #<NNNN> 저장 완료
@@ -186,12 +200,32 @@ _INDEX.md가 없으면 생성:
   docs/intent/<NNNN>-<slug>/transcript.md
   docs/intent/_INDEX.md (갱신됨)
 
+범위: <커밋 범위 또는 "미커밋 변경">
+비워 둔 항목: <예: assumptions — 대화에 드러나지 않음>   # 없으면 이 줄 생략
+
+<decision.md 전문>
+
+고칠 곳이 있으면 말해 주세요. 커밋 전이면 이 기록을 바로 고칩니다.
+
 다음 단계 (선택):
   - 다음 커밋 메시지 본문에 "Intent: <NNNN>" trailer 추가
   - 코드와 의도가 영구적으로 연결됨
 ```
 
 **자동으로 `git commit --amend`하거나 새 커밋을 만들지 마세요.** 사용자가 다음 커밋부터 수동으로 trailer 추가.
+
+## 저장 후 수정
+
+사용자가 저장된 기록의 수정을 요청하면 그 기록이 커밋됐는지 확인한다.
+
+```bash
+git status --porcelain docs/intent/<NNNN>-<slug>/
+```
+
+| 결과 | 동작 |
+|---|---|
+| 출력이 있다 (아직 커밋되지 않음) | `decision.md`를 직접 고치고 `_INDEX.md`의 제목도 맞춘다 |
+| 출력이 없다 (커밋됨) | 본문을 고치지 않는다. 보강은 `intent-refine`, 대체는 새 기록의 `supersedes`, 무효화는 `intent-retract`로 남긴다 |
 
 ## 관계 처리 (supersedes / refines)
 
@@ -208,9 +242,11 @@ backward 필드(`superseded_by`/`refined_by`/`retracted_by`) 갱신은 append-on
 
 ## 예외 처리
 
+기록 자체가 성립하지 않는 경우다. 이때만 저장하지 않고 사용자에게 알리거나 묻는다.
+
 - `git`이 초기화 안 된 디렉토리: 사용자에게 알리고 종료. claude-intent는 git 위에서 동작.
 - 변경사항 0건: 사용자에게 "기록할 변경 없음" 알림 후 종료. **예외**: supersede 목적 기록(코드 변경 없이 기존 결정을 뒤집고 대체하는 결정)은 변경사항 0건을 허용하며, 이때 `commits`/`files`는 빈 리스트로 둔다.
-- 대화 내 의도 추출 실패: 추측하지 않고 사용자에게 직접 입력 요청.
+- 대화 내 의도 추출 실패(`intent`를 한 문장으로 쓸 근거가 대화에 없음): 추측하지 않고 사용자에게 직접 입력 요청.
 
 ## 데이터 형식
 
@@ -229,7 +265,7 @@ backward 필드(`superseded_by`/`refined_by`/`retracted_by`) 갱신은 append-on
   | `retracts: []` | `retracted_by: null` | 철회 — 무효화, 대체 없음 | 옛 결정당 1회 |
 
 - backward 필드 갱신은 append-only의 **통제된 예외 3종**. 새 결정이 관계를 맺으면 옛 결정의 해당 필드만 갱신한다(필드가 없으면 추가).
-- **assumptions**: 결정이 의존하는 가정. 구체적·측정 가능하게 적는다(예: "외부 API ~100rps"). 가정이 깨지면 결정을 재검토하는 신호다.
+- **assumptions**: 결정이 의존하는 가정. 구체적·측정 가능하게 적는다(예: "외부 API ~100rps"). 가정이 깨지면 결정을 재검토하는 신호다. 대화에 드러난 것만 적으며, 없으면 `[]`다.
 - **session**: Claude Code session ID(UUID). raw transcript 추적용.
 
 ### transcript.md
