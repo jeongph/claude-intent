@@ -78,7 +78,7 @@ ls docs/intent/ 2>/dev/null | grep -oE '^[0-9]{4}' | sort -n | tail -1
 id: 0001
 title: "..."
 date: <YYYY-MM-DD>
-author: "<git config user.name>"
+author: "<기록을 작성한 주체 — 필드 규칙 참고>"
 commits: [...]
 files: [...]
 supersedes: []
@@ -89,7 +89,6 @@ retracts: []
 retracted_by: null
 assumptions:
   - "..."
-session: "<현재 Claude Code session id>"
 ---
 
 ## Intent
@@ -114,6 +113,7 @@ session: "<현재 Claude Code session id>"
 - 근거가 되는 발화나 변경을 짚을 수 있는 문장만 남긴다
 - 선택하지 않은 대안은 대화에서 나온 평가 그대로 적는다
 - `assumptions`에는 대화에서 누군가 말한 가정만 둔다
+- [개인정보](#개인정보) 규칙에 해당하는 값이 남아 있지 않은지 확인한다
 
 검수 모드면 이 단계에서 초안을 전체 표시하고 승인을 받는다([저장 방식](#저장-방식)).
 
@@ -132,16 +132,15 @@ mkdir -p docs/intent/<NNNN>-<slug>
 
 raw 대화의 핵심 부분을 Markdown으로 변환:
 
-- user/assistant 메시지 본문은 **원문 그대로** (정제 X, 요약 X)
+- user/assistant 메시지 본문은 **원문 그대로** (정제 X, 요약 X). 단, [개인정보](#개인정보)에 해당하는 값만 가린다
 - 도구 호출은 한 줄 요약: `[Bash: git diff HEAD --stat]`, `[Read: src/retry.ts]`
 - 도구 결과는 의미 있을 때만 짧게 인용 (`> 변경 파일 3개, +120 -45`)
 - 시간순
-- Claude session ID와 시작/종료 시각 첫 줄에 메타로 명시:
+- 시작/종료 시각을 첫 줄에 메타로 명시한다. 세션 ID는 프로젝트 지침이 요구할 때만 `**Range**` 위에 `**Session**: <id>` 줄로 넣는다([필드 규칙](#필드-규칙)):
 
 ```markdown
 # Cycle 0001 — Transcript
 
-**Session**: 8e6e52ee-3017-4ecb-b394-dc9a28f3d9ae
 **Range**: 2026-04-29 22:30 ~ 22:42
 
 ---
@@ -240,6 +239,14 @@ backward 필드(`superseded_by`/`refined_by`/`retracted_by`) 갱신은 append-on
 
 기록된 결정의 정교화 전용 흐름은 `intent-refine`, 철회는 `intent-retract` 스킬이 담당한다.
 
+## 개인정보
+
+기록은 저장소에 커밋되어 다른 사람과 공유된다. `decision.md`와 `transcript.md` 모두 다음을 지킨다.
+
+- 비밀값(토큰·비밀번호·키), 접속 정보(서버 주소·계정), 개인 식별 정보(실명·이메일 주소·사용자 홈 디렉토리의 절대 경로)는 `[비공개 처리]`로 바꾼다. 그 밖의 원문은 고치지 않는다.
+- 프로젝트 지침(`CLAUDE.md`·`AGENTS.md`)에 개인정보 규칙이 있으면 그 규칙을 따른다.
+- 가린 값이 있으면 9단계 보고에 무엇을 가렸는지 적는다(값 자체는 적지 않는다).
+
 ## 예외 처리
 
 기록 자체가 성립하지 않는 경우다. 이때만 저장하지 않고 사용자에게 알리거나 묻는다.
@@ -266,7 +273,8 @@ backward 필드(`superseded_by`/`refined_by`/`retracted_by`) 갱신은 append-on
 
 - backward 필드 갱신은 append-only의 **통제된 예외 3종**. 새 결정이 관계를 맺으면 옛 결정의 해당 필드만 갱신한다(필드가 없으면 추가).
 - **assumptions**: 결정이 의존하는 가정. 구체적·측정 가능하게 적는다(예: "외부 API ~100rps"). 가정이 깨지면 결정을 재검토하는 신호다. 대화에 드러난 것만 적으며, 없으면 `[]`다.
-- **session**: Claude Code session ID(UUID). raw transcript 추적용.
+- **author**: 기록을 작성한 주체. 프로젝트 지침이 작성자 표기를 정하면 그 값을 쓰고, 정하지 않았으면 `claude`다. git `user.name`은 쓰지 않는다. 기록을 커밋한 사람은 커밋 author로 남는다.
+- **session** (선택): 기본으로 기록하지 않는다. 프로젝트 지침이 요구할 때만 Claude Code session ID(UUID)를 넣는다. 세션 ID는 기록을 만든 기기에서 원본 대화를 찾을 때만 쓸모가 있고, 공유 저장소에서는 다른 사람에게 의미가 없는 식별자다.
 
 ### transcript.md
 user·assistant 본문은 원문 그대로, 도구 호출은 한 줄 요약, 도구 결과는 의미 있을 때만 짧게 인용한다. 시간순으로 적고 미화하지 않는다.

@@ -71,7 +71,7 @@ intent-record와 동일 규칙: 기존 최대 ID + 1 (4자리 zero-padding), slu
 id: 0043
 title: "..."
 date: <YYYY-MM-DD>
-author: "<git config user.name>"
+author: "<기록을 작성한 주체 — intent-record 필드 규칙>"
 commits: []          # 코드 변경 없는 정교화가 기본 — 빈 리스트 허용
 files: []
 supersedes: []
@@ -82,7 +82,6 @@ retracts: []
 retracted_by: null
 assumptions:
   - "..."
-session: "<현재 Claude Code session id>"
 ---
 
 ## Intent
@@ -97,7 +96,7 @@ session: "<현재 Claude Code session id>"
 [transcript.md](transcript.md)
 ```
 
-저장 전에 초안의 문장을 하나씩 대화와 대조한다. 근거가 되는 발화를 짚을 수 있는 문장만 남기고, `assumptions`에는 대화에서 누군가 말한 가정만 둔다.
+저장 전에 초안의 문장을 하나씩 대화와 대조한다. 근거가 되는 발화를 짚을 수 있는 문장만 남기고, `assumptions`에는 대화에서 누군가 말한 가정만 둔다. `author`·`session`과 개인정보 처리는 intent-record의 필드 규칙과 개인정보 절을 따른다.
 
 검수 모드면 이 단계에서 초안을 전체 표시하고 승인을 받는다([저장 방식](#저장-방식)).
 
