@@ -3,7 +3,7 @@ type: regex
 target:
   source: file
   path: docs/intent/0001-adopt-exponential-retry-backoff/transcript.md
-pattern: '^\*\*Session\*\*'
+pattern: 'alex@example\.com'
 flags: m
 match: not_contains
 ---
