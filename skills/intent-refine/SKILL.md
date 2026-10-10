@@ -71,7 +71,7 @@ intent-record와 동일 규칙: 기존 최대 ID + 1 (4자리 zero-padding), slu
 id: 0043
 title: "..."
 date: <YYYY-MM-DD>
-author: "<기록을 작성한 주체 — intent-record 필드 규칙>"
+author: "<프로젝트 지침이 정한 작성자 표기, 없으면 claude>"
 commits: []          # 코드 변경 없는 정교화가 기본 — 빈 리스트 허용
 files: []
 supersedes: []
@@ -96,7 +96,13 @@ assumptions:
 [transcript.md](transcript.md)
 ```
 
-저장 전에 초안의 문장을 하나씩 대화와 대조한다. 근거가 되는 발화를 짚을 수 있는 문장만 남기고, `assumptions`에는 대화에서 누군가 말한 가정만 둔다. `author`·`session`과 개인정보 처리는 intent-record의 필드 규칙과 개인정보 절을 따른다.
+저장 전에 초안의 문장을 하나씩 대화와 대조한다. 근거가 되는 발화를 짚을 수 있는 문장만 남기고, `assumptions`에는 대화에서 누군가 말한 가정만 둔다.
+
+작성자·세션 ID·개인정보는 intent-record와 같은 규칙을 따른다([필드 규칙](../intent-record/SKILL.md#필드-규칙), [개인정보](../intent-record/SKILL.md#개인정보)).
+
+- `author`는 기록을 작성한 주체다. 프로젝트 지침이 표기를 정하면 그 값, 아니면 `claude`. git `user.name`은 쓰지 않는다
+- `session`은 프로젝트 지침이 요구할 때만 넣는다
+- 비밀값·비공개 접속 정보·사람의 실명과 연락처는 `[비공개 처리]`로 가리고, 9단계 보고에 가린 항목을 적는다
 
 검수 모드면 이 단계에서 초안을 전체 표시하고 승인을 받는다([저장 방식](#저장-방식)).
 
@@ -133,6 +139,7 @@ mkdir -p docs/intent/<NNNN>-<slug>
   docs/intent/_INDEX.md (갱신됨)
 
 대상: #<대상> <제목> — <한 줄 요약>
+가린 항목: <예: transcript의 토큰 1건>   # 없으면 이 줄 생략
 
 <decision.md 전문>
 
