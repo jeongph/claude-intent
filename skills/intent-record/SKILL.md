@@ -1,24 +1,24 @@
 ---
 name: intent-record
 description: >-
-  Use when the user wants to record/save the current work cycle's intent, decisions, and trade-offs into docs/intent/. 사용자가 한국어로 "이번 사이클 정리해줘", "기록해줘", "intent record", "사이클 저장", "방금 한 거 의도 저장", "오늘 작업 의도 기록", "이거 의도 남겨", "사이클 마무리" 같은 말을 하거나, 영어로 "record this cycle", "save the intent", "log the decision", "intent record"라고 할 때. 구분: 이미 기록된 결정에 근거·가정을 보강만 하는 건 intent-refine, 기록된 결정을 대체 없이 무효화하는 건 intent-retract 영역. 기존 결정을 뒤집고 대체하는 기록(supersedes)은 이 스킬 영역이다.
+  Use when the user wants to record/save the current work cycle's intent, decisions, and trade-offs into docs/intent/. 사용자가 한국어로 "이번 사이클 정리해줘", "기록해줘", "intent record", "사이클 저장", "방금 한 거 의도 저장", "오늘 작업 의도 기록", "이거 의도 남겨", "사이클 마무리" 같은 말을 하거나, 영어로 "record this cycle", "save the intent", "log the decision", "intent record"라고 할 때. 구분: 이미 기록된 결정에 근거나 가정을 보강만 하는 건 intent-refine, 기록된 결정을 대체 없이 무효화하는 건 intent-retract 영역. 기존 결정을 뒤집고 대체하는 기록(supersedes)은 이 스킬 영역이다.
 ---
 
 # Intent Record
 
-현재 작업 사이클의 **의도(Intent)·대안(Alternatives)·트레이드오프(Trade-offs)·가정(Assumptions)**을 추출해 `docs/intent/<NNNN>-<slug>/`에 저장합니다.
+현재 작업 사이클의 **의도, 대안, 트레이드오프, 가정**(Intent, Alternatives, Trade-offs, Assumptions)을 추출해 `docs/intent/<NNNN>-<slug>/`에 저장합니다.
 
 비유: `git commit`의 의도 레이어 버전.
 
 ## 저장 방식
 
-기록을 요청받으면 **1~9단계를 이어서 수행해 저장한 뒤 보고한다.** 범위·제목·slug는 스스로 정하고, 대화에 드러나지 않은 항목은 비워 둔다. 무엇을 정했고 무엇을 비우거나 가렸는지는 9단계 보고에 적는다.
+기록을 요청받으면 **1~9단계를 이어서 수행해 저장한 뒤 보고한다.** 범위, 제목, slug는 스스로 정하고, 대화에 드러나지 않은 항목은 비워 둔다. 무엇을 정했고 무엇을 비우거나 가렸는지는 9단계 보고에 적는다.
 
 | 조건 | 동작 |
 |---|---|
 | 기본 | 끝까지 진행해 저장하고 9단계 보고로 마친다 |
-| 사용자 요청에 "검수", "초안 먼저", "확인하고 저장", "review first"가 있다. 또는 프로젝트 지침 파일(`CLAUDE.md`·`AGENTS.md`)이 저장 전 검수를 요구한다 | **검수 모드**: 5단계에서 초안을 전체 표시하고 승인을 받은 뒤 저장한다. 수정 요청은 반영하고, 거절하면 저장하지 않는다 |
-| [예외 처리](#예외-처리)에 해당한다 | 그 절대로 알리거나 입력을 요청한다 |
+| 사용자 요청에 "검수", "초안 먼저", "확인하고 저장", "review first"가 있다. 또는 프로젝트 지침 파일(`CLAUDE.md`, `AGENTS.md`)이 저장 전 검수를 요구한다 | **검수 모드**: 5단계에서 초안을 전체 표시하고 승인을 받은 뒤 저장한다. 수정 요청은 반영하고, 거절하면 저장하지 않는다 |
+| [예외 처리](#예외-처리)에 해당한다 | 그 절에 따라 알리거나 입력을 요청한다 |
 
 기록의 정직성은 세 가지로 지킨다. 대화에 없는 내용을 쓰지 않는다(3·5단계). 원문 발췌를 함께 남긴다(7단계). 저장한 내용을 전부 보여 준다(9단계).
 
@@ -42,8 +42,8 @@ git diff HEAD
 ls docs/intent/ 2>/dev/null | grep -oE '^[0-9]{4}' | sort -n | tail -1
 ```
 
-- 결과 없음 → `0001`
-- 결과 있음 → `(max + 1)` 4자리 zero-padding
+- 결과가 없으면 `0001`
+- 결과가 있으면 `(max + 1)`, 4자리 zero-padding
 - `docs/intent/` 디렉토리 자체가 없으면 생성
 
 ### 3. 의도 추출
@@ -108,7 +108,7 @@ assumptions:
 [transcript.md](transcript.md)
 ```
 
-저장 전에 초안의 문장을 하나씩 대화·git 변경과 대조한다.
+저장 전에 초안의 문장을 하나씩 대화나 git 변경과 대조한다.
 
 - 근거가 되는 발화나 변경을 짚을 수 있는 문장만 남긴다
 - 선택하지 않은 대안은 대화에서 나온 평가 그대로 적는다
@@ -125,8 +125,8 @@ mkdir -p docs/intent/<NNNN>-<slug>
 
 두 파일 작성:
 
-- `docs/intent/<NNNN>-<slug>/decision.md` — 5단계에서 점검한 내용
-- `docs/intent/<NNNN>-<slug>/transcript.md` — raw 대화 발췌
+- `docs/intent/<NNNN>-<slug>/decision.md`: 5단계에서 점검한 내용
+- `docs/intent/<NNNN>-<slug>/transcript.md`: raw 대화 발췌
 
 ### 7. transcript.md 작성 규칙
 
@@ -159,7 +159,7 @@ exponential-backoff로 가자
 ...
 ```
 
-발화 본문이 매우 길면 (수천 단어) 핵심 단락만 발췌하되 **잘라낸 부분 표시**(`[... 중간 생략 ...]`)를 명시. 통째 미화 X.
+발화 본문이 매우 길면(수천 단어) 핵심 단락만 발췌하되 **잘라낸 부분 표시**(`[... 중간 생략 ...]`)를 명시한다. 통째로 미화하지 않는다.
 
 ### 8. _INDEX.md 갱신
 
@@ -170,7 +170,7 @@ exponential-backoff로 가자
 - 둘 다 있으면 `_INDEX.md`가 최신이다. **절대 덮어쓰지 않는다.** `INDEX.md`에만 있는 행을 ID 기준으로 `_INDEX.md`에 옮기고, 같은 ID가 양쪽에 있으면 `_INDEX.md` 쪽 행을 남긴다. 합친 표는 ID 역순(최신이 맨 위)으로 정렬한 뒤 `INDEX.md`를 삭제한다.
 - `_INDEX.md`만 있으면 그대로 갱신을 진행한다.
 
-`docs/intent/_INDEX.md`에 새 행을 **맨 위(시간 역순)**로 추가:
+`docs/intent/_INDEX.md`에 새 행을 **맨 위**(시간 역순)로 추가:
 
 ```markdown
 | [<NNNN>](<NNNN>-<slug>/) | <YYYY-MM-DD> | <title> | <short-commit> | <relations> |
@@ -212,7 +212,7 @@ _INDEX.md가 없으면 생성:
   - 코드와 의도가 영구적으로 연결됨
 ```
 
-**자동으로 `git commit --amend`하거나 새 커밋을 만들지 마세요.** 사용자가 다음 커밋부터 수동으로 trailer 추가.
+**자동으로 `git commit --amend`하거나 새 커밋을 만들지 마세요.** 사용자가 다음 커밋부터 수동으로 trailer를 추가한다.
 
 ## 저장 후 수정
 
@@ -236,7 +236,7 @@ git status --porcelain docs/intent/<NNNN>-<slug>/
 
 `refines`를 기록할 때도 대칭으로 옛 결정의 `refined_by` 리스트에 새 ID를 append한다.
 
-backward 필드(`superseded_by`/`refined_by`/`retracted_by`) 갱신은 append-only 원칙의 **통제된 예외 3종**이다. 옛 결정의 해당 필드 한 개만 갱신하고(필드가 없으면 추가), 본문·다른 필드는 절대 건드리지 않음.
+backward 필드(`superseded_by`/`refined_by`/`retracted_by`) 갱신은 append-only 원칙의 **통제된 예외 3종**이다. 옛 결정의 그 필드 한 개만 갱신하고(필드가 없으면 추가), 본문이나 다른 필드는 절대 건드리지 않는다.
 
 기록된 결정의 정교화 전용 흐름은 `intent-refine`, 철회는 `intent-retract` 스킬이 담당한다.
 
@@ -245,21 +245,21 @@ backward 필드(`superseded_by`/`refined_by`/`retracted_by`) 갱신은 append-on
 기록은 저장소에 커밋되어 다른 사람과 공유된다. `decision.md`와 `transcript.md` 모두 다음을 지킨다.
 
 - 다음 값은 `[비공개 처리]`로 바꾼다. frontmatter 값 안에 들어가면 따옴표로 감싼다.
-  - 비밀값: 토큰·비밀번호·API 키·인증서
-  - 비공개 접속 정보: 내부 호스트 이름·사설 IP·로그인 계정과 자격 증명
-  - 사람의 개인 식별 정보: 실명·이메일 주소·전화번호
+  - 비밀값: 토큰, 비밀번호, API 키, 인증서
+  - 비공개 접속 정보: 내부 호스트 이름, 사설 IP, 로그인 계정과 자격 증명
+  - 사람의 개인 식별 정보: 실명, 이메일 주소, 전화번호
 - 파일 경로는 의미를 남겨 줄인다. 저장소 안 경로는 저장소 루트 기준 상대 경로로, 저장소 밖 경로는 홈 디렉토리 부분을 `~`로 적는다.
-- 공개 서비스의 도메인, 라이브러리·저장소 이름, 프로젝트 지침이 정한 `author` 값은 가리지 않는다. 그 밖의 원문은 고치지 않는다.
-- 프로젝트 지침(`CLAUDE.md`·`AGENTS.md`)의 개인정보 규칙은 이 규칙에 더해 적용한다. 비밀값 가림은 완화하지 않는다.
+- 공개 서비스의 도메인, 라이브러리와 저장소 이름, 프로젝트 지침이 정한 `author` 값은 가리지 않는다. 그 밖의 원문은 고치지 않는다.
+- 프로젝트 지침(`CLAUDE.md`, `AGENTS.md`)의 개인정보 규칙은 이 규칙에 더해 적용한다. 비밀값 가림은 완화하지 않는다.
 - 가린 값이 있으면 9단계 보고의 `가린 항목`에 종류와 개수를 적는다(값 자체는 적지 않는다).
 
 ## 예외 처리
 
 기록 자체가 성립하지 않는 경우다. 이때만 저장하지 않고 사용자에게 알리거나 묻는다.
 
-- `git`이 초기화 안 된 디렉토리: 사용자에게 알리고 종료. claude-intent는 git 위에서 동작.
-- 변경사항 0건: 사용자에게 "기록할 변경 없음" 알림 후 종료. **예외**: supersede 목적 기록(코드 변경 없이 기존 결정을 뒤집고 대체하는 결정)은 변경사항 0건을 허용하며, 이때 `commits`/`files`는 빈 리스트로 둔다.
-- 대화 내 의도 추출 실패(`intent`를 한 문장으로 쓸 근거가 대화에 없음): 추측하지 않고 사용자에게 직접 입력 요청.
+- `git`이 초기화되지 않은 디렉토리: 사용자에게 알리고 종료한다. claude-intent는 git 위에서 동작한다.
+- 변경사항 0건: 사용자에게 "기록할 변경 없음"을 알리고 종료한다. **예외**: supersede 목적 기록(코드 변경 없이 기존 결정을 뒤집고 대체하는 결정)은 변경사항 0건을 허용하며, 이때 `commits`/`files`는 빈 리스트로 둔다.
+- 대화 내 의도 추출 실패(`intent`를 한 문장으로 쓸 근거가 대화에 없음): 추측하지 않고 사용자에게 직접 입력을 요청한다.
 
 ## 데이터 형식
 
@@ -275,12 +275,12 @@ backward 필드(`superseded_by`/`refined_by`/`retracted_by`) 갱신은 append-on
   |---|---|---|---|
   | `supersedes: []` | `superseded_by: null` | 뒤집고 대체 (새 방향 있음) | 옛 결정당 1회 |
   | `refines: []` | `refined_by: []` | 같은 방향 정교화 (옛 결정 여전히 유효) | 여러 번 가능 (리스트) |
-  | `retracts: []` | `retracted_by: null` | 철회 — 무효화, 대체 없음 | 옛 결정당 1회 |
+  | `retracts: []` | `retracted_by: null` | 철회 (무효화, 대체 없음) | 옛 결정당 1회 |
 
-- backward 필드 갱신은 append-only의 **통제된 예외 3종**. 새 결정이 관계를 맺으면 옛 결정의 해당 필드만 갱신한다(필드가 없으면 추가).
-- **assumptions**: 결정이 의존하는 가정. 구체적·측정 가능하게 적는다(예: "외부 API ~100rps"). 가정이 깨지면 결정을 재검토하는 신호다. 대화에 드러난 것만 적으며, 없으면 `[]`다.
+- backward 필드 갱신은 append-only의 **통제된 예외 3종**이다. 새 결정이 관계를 맺으면 옛 결정의 그 필드만 갱신한다(필드가 없으면 추가).
+- **assumptions**: 결정이 의존하는 가정. 구체적이고 측정 가능하게 적는다(예: "외부 API ~100rps"). 가정이 깨지면 결정을 재검토하는 신호다. 대화에 드러난 것만 적으며, 없으면 `[]`다.
 - **author**: 기록을 작성한 주체. 프로젝트 지침이 작성자 표기를 정하면 그 값을 쓰고, 정하지 않았으면 `claude`다. git `user.name`은 쓰지 않는다. 기록을 커밋한 사람은 커밋 author로 남는다.
 - **session** (선택): 기본으로 기록하지 않는다. 프로젝트 지침이 요구할 때만 Claude Code session ID(UUID)를 넣는다. 세션 ID는 기록을 만든 기기에서 원본 대화를 찾을 때만 쓸모가 있고, 공유 저장소에서는 다른 사람에게 의미가 없는 식별자다.
 
 ### transcript.md
-user·assistant 본문은 원문 그대로(단, [개인정보](#개인정보) 대상은 가린다), 도구 호출은 한 줄 요약, 도구 결과는 의미 있을 때만 짧게 인용한다. 시간순으로 적고 미화하지 않는다.
+user와 assistant 본문은 원문 그대로(단, [개인정보](#개인정보) 대상은 가린다), 도구 호출은 한 줄 요약, 도구 결과는 의미 있을 때만 짧게 인용한다. 시간순으로 적고 미화하지 않는다.

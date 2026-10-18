@@ -5,7 +5,7 @@ description: Use when the user wants to find the intent behind code, search past
 
 # Intent Why
 
-코드·키워드·커밋·ID로 과거 결정을 역추적합니다. **읽기 전용 — 절대 저장·수정하지 않습니다.**
+코드, 키워드, 커밋, ID로 과거 결정을 역추적합니다. **읽기 전용이며, 절대 저장하거나 수정하지 않습니다.**
 
 비유: `git blame`의 의도 레이어 버전. 누가 썼는지가 아니라 **왜 그렇게 결정했는지**.
 
@@ -43,7 +43,7 @@ description: Use when the user wants to find the intent behind code, search past
 ls docs/intent/ 2>/dev/null
 ```
 
-- `docs/intent/` 없음 또는 비어있음 → "기록된 사이클이 없음. `intent-record`로 첫 사이클부터 만드세요." 알림 후 종료. **추측·환각 금지.**
+- `docs/intent/`가 없거나 비어 있으면 "기록된 사이클이 없음. `intent-record`로 첫 사이클부터 만드세요." 알림 후 종료. **추측과 환각 금지.**
 - 있으면 다음 단계.
 
 ### 2. 검색 실행
@@ -57,7 +57,7 @@ grep -B1 -A20 "^files:" docs/intent/*/decision.md | grep -l "<file-path>"
 
 #### 키워드
 ```bash
-# 한국어·영어 모두. 대소문자 무시.
+# 한국어와 영어 모두. 대소문자 무시.
 grep -rli "<keyword>" docs/intent/*/decision.md
 ```
 
@@ -74,9 +74,9 @@ ls -d docs/intent/<NNNN>-*/  # 정확히 1개여야 정상
 
 ### 3. INDEX 보조 활용
 
-`docs/intent/_INDEX.md`를 읽어 시간순·관계 정보 추가 확보:
+`docs/intent/_INDEX.md`를 읽어 시간순과 관계 정보를 추가로 확보한다:
 - 매칭된 사이클의 정확한 행 위치
-- supersedes/refines 관계 한 눈에
+- supersedes/refines 관계를 한눈에 파악
 
 `_INDEX.md`가 없고 이전 이름의 `INDEX.md`만 있으면 그것을 읽는다.
 
@@ -85,7 +85,7 @@ ls -d docs/intent/<NNNN>-*/  # 정확히 1개여야 정상
 매칭된 각 결정 frontmatter에서:
 
 - **`supersedes: [<id>, ...]`** → 그 옛 결정들도 함께 표시 (역사적 맥락. 한 단계만 추적, 깊이 제한)
-- **`superseded_by: <id>`** → 이 결정이 이미 뒤집혔으면 신결정 안내 ("⚠️ #0042가 이걸 뒤집음")
+- **`superseded_by: <id>`** → 이 결정이 이미 뒤집혔으면 새 결정 안내 ("⚠️ #0042가 이걸 뒤집음")
 - **`refines: [<id>, ...]`** → 정교화 관계 한 줄로 표시
 - **`refined_by: [<id>, ...]`** → "→ #NNNN에서 정교화됨" 표시 (결정은 여전히 유효)
 - **`retracts: [<id>, ...]`** → 이 결정이 무엇을 철회했는지 한 줄로 표시
@@ -134,7 +134,7 @@ grep -l "refines:.*<id>\|retracts:.*<id>" docs/intent/*/decision.md
   → docs/intent/0019-fixed-retry/
 ```
 
-정교화·철회 관계 표시 예:
+정교화와 철회 관계 표시 예:
 
 ```
 #0042 (2026-04-29) 재시도 백오프 도입
@@ -167,13 +167,13 @@ grep -l "refines:.*<id>\|retracts:.*<id>" docs/intent/*/decision.md
 
 이 스킬은 다음을 **하지 않습니다**:
 
-- 결정 작성·수정 (= `intent-record` / `intent-refine` / `intent-retract` 영역)
-- 코드 직접 분석·실행 (= 일반 코드 리딩)
+- 결정 작성과 수정 (= `intent-record` / `intent-refine` / `intent-retract` 영역)
+- 코드 직접 분석과 실행 (= 일반 코드 리딩)
 - 의도와 코드의 어긋남 검증 (= 미래 `intent-verify`)
 - 임베딩·의미 검색 (= MVP 범위 밖, frontmatter+grep만)
 
 ## 함정
 
-1. **저장된 사이클 0개 = 정상 0건 결과.** 빈 결과 채우려고 LLM이 만들어내지 말 것.
+1. **저장된 사이클이 0개면 0건 결과가 정상이다.** 빈 결과를 채우려고 LLM이 만들어내지 말 것.
 2. **체인 무한 루프**: supersedes 체인에서 A→B→A 같은 순환이 있으면 1단계에서 멈추고 사용자에게 알림.
-3. **부분 매칭의 노이즈**: 너무 일반적인 키워드("api", "fix")는 매칭이 폭발할 수 있음. 5건 초과하면 사용자에게 더 구체적인 키워드 요청.
+3. **부분 매칭의 노이즈**: 너무 일반적인 키워드("api", "fix")는 매칭이 폭발할 수 있음. 5건을 초과하면 사용자에게 더 구체적인 키워드 요청.
