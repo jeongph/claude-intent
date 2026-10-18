@@ -12,7 +12,7 @@ cmd=$(printf '%s' "$payload" \
 case "$cmd" in
   *"git commit"*)
     cat <<'JSON'
-{"hookSpecificOutput":{"hookEventName":"PostToolUse","additionalContext":"방금 git commit이 실행됐다. 이번 변경이 의도·대안·트레이드오프를 남길 만한 결정이면 intent-record로 기록을 제안하라. 사소한 변경이면 제안하지 않는다."}}
+{"hookSpecificOutput":{"hookEventName":"PostToolUse","additionalContext":"방금 git commit이 실행됐다. 이번 변경이 의도, 대안, 트레이드오프를 남길 만한 결정이면 intent-record로 기록을 제안하라. 사소한 변경이면 제안하지 않는다."}}
 JSON
     ;;
 esac
