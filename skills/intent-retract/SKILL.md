@@ -129,10 +129,10 @@ mkdir -p docs/intent/<NNNN>-<slug>
 
 ### 9. 저장 보고
 
-저장한 `decision.md` **전문**을 포함해 보고한다. 사용자가 저장된 내용을 처음 보는 자리다.
+저장한 파일 경로와 요약만 보고한다. 사용자는 전문을 파일에서 읽는다.
 
 ```
-사이클 #<NNNN> 저장 완료 (retracts #<대상>)
+사이클 #<NNNN> 저장 완료 (retracts #<대상>): <title>
 
   docs/intent/<NNNN>-<slug>/decision.md
   docs/intent/<NNNN>-<slug>/transcript.md
@@ -140,13 +140,14 @@ mkdir -p docs/intent/<NNNN>-<slug>
   docs/intent/_INDEX.md (갱신됨)
 
 대상: #<대상> <제목> — <한 줄 요약>
+철회 이유: <한 줄>
 가린 항목: <예: transcript의 토큰 1건>   # 없으면 이 줄 생략
 
-<decision.md 전문>
-
 이후 intent-why에서 #<대상>은 "⚠️ 철회됨"으로 표시됩니다.
-고칠 곳이 있으면 말해 주세요. 커밋 전이면 이 기록을 바로 고칩니다.
+전문은 decision.md에서 확인할 수 있습니다. 고칠 곳이 있으면 말해 주세요. 커밋 전이면 이 기록을 바로 고칩니다.
 ```
+
+보고에 들어가는 내용은 위 형식이 전부다. `decision.md`와 `transcript.md`의 본문은 보고에 넣지 않는다. 검수 모드도 같은 형식으로 보고한다(초안은 6단계에서 이미 보여 줬다). 사용자가 "전문 보여 줘"처럼 저장된 내용을 보여 달라고 하면 그때 `decision.md`를 읽어 보여 준다.
 
 git commit이나 amend는 하지 않는다. 코드 되돌리기(revert)가 필요하면 그것은 별도의 git 작업이다.
 
